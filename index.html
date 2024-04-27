@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-direction: column;
+        transition: all 2s ease;
+      }
+      .container {
+        width: 1000px;
+        height: 500px;
+        border-bottom: 150px solid rgb(104, 212, 104);
+        position: relative;
+        overflow: hidden;
+      }
+      #character {
+        width: 30px;
+        height: 100px;
+        background-color: rgb(126, 126, 243);
+        position: absolute;
+        top: 400px;
+        left: 150px;
+      }
+      .jump {
+        animation: player 0.5s ease-in-out;
+      }
+      @keyframes player {
+        0% {
+          top: 400px;
+        }
+        25% {
+          top: 320px;
+        }
+        50% {
+          top: 320px;
+        }
+        75% {
+          top: 340px;
+        }
+        100% {
+          top: 400px;
+        }
+      }
+      #obstacle {
+        width: 50px;
+        height: 50px;
+        background-color: rgb(255, 102, 52);
+        position: absolute;
+        top: 450px;
+        /* right: 0px; */
+      }
+      .slide {
+        animation: enemy 1.2s linear infinite;
+      }
+      @keyframes enemy {
+        0% {
+          right: -3px;
+        }
+
+        100% {
+          right: 1004px;
+        }
+      }
+      .paused {
+        animation-play-state: paused;
+      }
+      p {
+        font-size: 1.5rem;
+        text-transform: uppercase;
+      }
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-20px); }
+        50% { transform: translateX(20px); }
+        75% { transform: translateX(-20px); }
+        100% { transform: translateX(0); }
+    }
+
+    .shake {
+        animation: shake 0.5s ease-in-out;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Score:</p>
+    <div class="container">
+      <div id="character"></div>
+      <div id="obstacle" class="slide"></div>
+    </div>
+    <script>
+      const enemy = document.getElementById("obstacle");
+      const player = document.getElementById("character");
+      const p = document.getElementsByTagName("p")[0];
+      const container = document.querySelector('.container');
+      let isOver = false;
+      let score = 0;
+      window.addEventListener("keydown", (e) => {
+        if (e.keyCode == 32 && !isOver) {
+          if (player.classList == "jump") return;
+          player.classList.add("jump");
+          setTimeout(() => {
+            player.classList.remove("jump");
+          }, 500);
+        } else if (e.keyCode == 32 && isOver) {
+          location.reload();
+        }
+      });
+      function checkCollision() {
+        let playerRect = player.getBoundingClientRect();
+        let enemyRect = enemy.getBoundingClientRect();
+        if (
+          playerRect.right >= enemyRect.left &&
+          playerRect.left <= enemyRect.right &&
+          playerRect.bottom >= enemyRect.top &&
+          playerRect.top <= enemyRect.bottom
+        ) {
+          isOver = true;
+          container.classList.add('shake');
+          enemy.classList.add("paused");
+          player.classList.add("Paused");
+          p.innerText = `Game Over, Score: ${score}`;
+          clearInterval(id);
+          return;
+        }
+        score++;
+        p.innerText = `Score: ${score}`;
+        if (score > 1000) {
+          document.body.style.backgroundColor = "#1e1d1d";
+          p.style.color = "#fff";
+        }
+      }
+      let id = setInterval(checkCollision, 10);
+    </script>
+  </body>
+</html>
